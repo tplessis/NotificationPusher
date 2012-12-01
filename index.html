@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>NotificationPusher by Ph3nol</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>NotificationPusher</h1>
+        <p>PHP library for easy Apple/Android notification message pushing.</p>
+
+        <p class="view"><a href="https://github.com/Ph3nol/NotificationPusher">View the Project on GitHub <small>Ph3nol/NotificationPusher</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Ph3nol/NotificationPusher/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Ph3nol/NotificationPusher/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Ph3nol/NotificationPusher">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>NotificationPusher</h1>
+
+<p>PHP library for easy Apple/Android notification message pushing.</p>
+
+<h2>WORK IN PROGRESS.</h2>
+
+<p><a href="http://travis-ci.org/Ph3nol/NotificationPusher"><img src="https://secure.travis-ci.org/Ph3nol/NotificationPusher.png" alt="Continuous Integration status"></a></p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>PHP 5.3+</li>
+<li>PHP Curl extension - +SSL support (for AndroidPusher service)</li>
+<li>PHP OpenSSL extension (for ApplePusher service)</li>
+</ul><h2>Installation</h2>
+
+<h3>Add to your project Composer packages</h3>
+
+<p>Just add <code>sly/notification-pusher</code> package to the requirements of your Composer JSON configuration file,
+and run <code>php composer.phar install</code> to install it.</p>
+
+<h3>Install from GitHub</h3>
+
+<p>Clone this library from Git with <code>git clone https://github.com/Ph3nol/NotificationPusher.git</code>.</p>
+
+<p>Goto to the library directory, get Composer phar package and install vendors:</p>
+
+<pre><code>curl -s https://getcomposer.org/installer | php
+php composer.phar install
+</code></pre>
+
+<p>You're ready to go.</p>
+
+<h2>Example</h2>
+
+<h3>Apple push (iPhone / iPad)</h3>
+
+<ul>
+<li>Requirements: create a developer SSL certificate for your application</li>
+</ul><div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">require_once</span> <span class="s1">'/path/to/your/vendor/autoload.php'</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Sly\NotificationPusher\Model\Message</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Sly\NotificationPusher\Pusher\ApplePusher</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Initialize Apple pusher service.</span>
+<span class="sd"> */</span>
+<span class="nv">$pusher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ApplePusher</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="s1">'dev'</span>                    <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>                             <span class="c1">// Developer/Sandbox mode enabled (default: false)</span>
+    <span class="s1">'simulate'</span>               <span class="o">=&gt;</span> <span class="k">false</span><span class="p">,</span>                            <span class="c1">// Simulate sendings (default: false)</span>
+    <span class="s1">'certificate'</span>            <span class="o">=&gt;</span> <span class="s1">'/path/to/your/certificate.pem'</span><span class="p">,</span>
+    <span class="s1">'certificate_passphrase'</span> <span class="o">=&gt;</span> <span class="s1">'myPassPhrase'</span><span class="p">,</span>                   <span class="c1">// Generated certificate passphrase (if needed)</span>
+    <span class="s1">'devices'</span>                <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">'D3v1c3T0k3n1'</span><span class="p">,</span> <span class="s1">'D3v1c3T0k3n2'</span><span class="p">,</span> <span class="s1">'D3v1c3T0k3n3'</span><span class="p">),</span> <span class="c1">// Apple Device Tokens</span>
+<span class="p">));</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Add some test pushes.</span>
+<span class="sd"> */</span>
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$message</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Message</span><span class="p">(</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">'This is Test #%d'</span><span class="p">,</span> <span class="nv">$i</span><span class="p">));</span>
+    <span class="c1">// $message-&gt;setAlert(false);           // Don't display message</span>
+    <span class="c1">// $message-&gt;setBadge(5);               // Increment users badges with '5'</span>
+    <span class="c1">// $message-&gt;setSound('bingbong.aiff'); // Set specific sound</span>
+
+    <span class="nv">$pusher</span><span class="o">-&gt;</span><span class="na">addMessage</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Push queue.</span>
+<span class="sd"> */</span>
+<span class="nv">$pushedMessages</span> <span class="o">=</span> <span class="nv">$pusher</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">();</span>
+</pre></div>
+
+<p>To manage users badges, we can pass a specific array to the pusher service (instead of passing an array of tokens).
+This array contains 2 informations: the device token and the actual user badge count. Here is an example of
+an ApplePusher service instance:</p>
+
+<div class="highlight"><pre><span class="nv">$pusher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ApplePusher</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="s1">'dev'</span>                    <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>                             <span class="c1">// Developer/Sandbox mode enabled (default: false)</span>
+    <span class="s1">'simulate'</span>               <span class="o">=&gt;</span> <span class="k">false</span><span class="p">,</span>                            <span class="c1">// Simulate sendings (default: false)</span>
+    <span class="s1">'certificate'</span>            <span class="o">=&gt;</span> <span class="s1">'/path/to/your/certificate.pem'</span><span class="p">,</span>
+    <span class="s1">'devices'</span>                <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+        <span class="k">array</span><span class="p">(</span><span class="s1">'D3v1c3T0k3n1'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="c1">// User 1 has a '0' badge count</span>
+        <span class="k">array</span><span class="p">(</span><span class="s1">'D3v1c3T0k3n2'</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="c1">// User 2 has a '5' badge count</span>
+        <span class="k">array</span><span class="p">(</span><span class="s1">'D3v1c3T0k3n3'</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="c1">// User 3 has a '2' badge count</span>
+        <span class="c1">// ...</span>
+    <span class="p">),</span>
+<span class="p">));</span>
+</pre></div>
+
+<p>Each user badge count will be incremented with the Message object badge parameter.</p>
+
+<h3>Android push</h3>
+
+<ul>
+<li>Requirements: get a Google account project API key</li>
+</ul><div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">require_once</span> <span class="s1">'/path/to/your/vendor/autoload.php'</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Sly\NotificationPusher\Model\Message</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Sly\NotificationPusher\Pusher\AndroidPusher</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Initialize Android pusher service.</span>
+<span class="sd"> */</span>
+<span class="nv">$pusher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AndroidPusher</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="s1">'applicationID'</span> <span class="o">=&gt;</span> <span class="s1">'123456789012'</span><span class="p">,</span> <span class="c1">// Your Google project application ID</span>
+    <span class="s1">'apiKey'</span>        <span class="o">=&gt;</span> <span class="s1">'y0ur4p1k3y'</span><span class="p">,</span>   <span class="c1">// Your Google account project API key</span>
+    <span class="s1">'devices'</span>       <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">'D3v1c3T0k3n1'</span><span class="p">,</span> <span class="s1">'D3v1c3T0k3n2'</span><span class="p">,</span> <span class="s1">'D3v1c3T0k3n3'</span><span class="p">),</span> <span class="c1">// Android register IDs</span>
+<span class="p">));</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Add some test pushes.</span>
+<span class="sd"> */</span>
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$message</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Message</span><span class="p">(</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">'This is Test #%d'</span><span class="p">,</span> <span class="nv">$i</span><span class="p">));</span>
+
+    <span class="nv">$pusher</span><span class="o">-&gt;</span><span class="na">addMessage</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * Push queue.</span>
+<span class="sd"> */</span>
+<span class="nv">$pushedMessages</span> <span class="o">=</span> <span class="nv">$pusher</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">();</span>
+
+</pre></div>
+
+<h2>Test with Atoum</h2>
+
+<p>This library is using <a href="https://github.com/mageekguy/atoum">Atoum</a> for unit testing,
+whose Composer package can be installed with <code>dev</code> mode:</p>
+
+<pre><code>php composer install --dev
+./atoum -d tests/units
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Ph3nol">Ph3nol</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
