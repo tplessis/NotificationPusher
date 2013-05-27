@@ -16,6 +16,7 @@ use Sly\NotificationPusher\Exception\RuntimeException;
 class ApplePusher extends BasePusher
 {
     const TTL                               = 3600;
+    const APNS_RESERVED_NAMESPACE           = 'aps';
     const APNS_SERVER_HOST                  = 'ssl://gateway.push.apple.com:2195';
     const APNS_SANDBOX_SERVER_HOST          = 'ssl://gateway.sandbox.push.apple.com:2195';
     const APNS_FEEDBACK_SERVER_HOST         = 'ssl://feedback.push.apple.com:2196';
@@ -196,6 +197,12 @@ class ApplePusher extends BasePusher
 
         $payload['aps']['badge'] = (int) $message->getBadge();
         $payload['aps']['sound'] = $message->getSound();
+        
+        if(count($message->getData()) > 0) {
+            foreach ($message->getData() as $key => $value) {
+                $payload[$key] = $value;
+            }
+        }
 
         return isset($payload) ? json_encode($payload) : null;
     }

@@ -3,6 +3,7 @@
 namespace Sly\NotificationPusher\Model;
 
 use Sly\NotificationPusher\Model\MessageInterface;
+use Sly\NotificationPusher\Pusher\ApplePusher;
 
 class Message implements MessageInterface
 {
@@ -11,6 +12,7 @@ class Message implements MessageInterface
     protected $alert;
     protected $sound;
     protected $badge;
+    protected $data;
     protected $createdAt;
     protected $sentAt;
 
@@ -23,6 +25,7 @@ class Message implements MessageInterface
         $this->message   = $message;
         $this->alert     = true;
         $this->badge     = 0;
+        $this->data      = array();
         $this->sound     = 'default';
         $this->createdAt = new \DateTime();
     }
@@ -138,6 +141,36 @@ class Message implements MessageInterface
     public function setSound($sound)
     {
         $this->sound = $sound;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getDataValueForKey($key)
+    {
+        if(array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        } else {
+            return NULL;
+        }        
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function addData($key, $value)
+    {
+        if($key !== ApplePusher::APNS_RESERVED_NAMESPACE) {
+            $this->data[$key] = $value;
+        }
     }
 
     /**
